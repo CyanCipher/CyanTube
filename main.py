@@ -37,9 +37,10 @@ def clrscr():
 
 
 # converter for mp4 -> mp3
-def convert(title):
+def convert(title, rem=1, cur=1):
     clrscr()
-    console.rule(f"[bold red]Converting {title}")
+    console.rule(f"[bold white]Converting: [bold red]{title[0:30]}")
+    console.print(f"[{cur}/{rem}]", justify="right")
     wd = os.getcwd()
     video = VideoFileClip(os.path.join(wd, "mp4", f"{title}.mp4"))
     try:
@@ -49,7 +50,7 @@ def convert(title):
     video.close()
 
 
-def download(url):
+def download(url, rem=1, cur=1):
 
     # working directory
     clrscr()
@@ -65,7 +66,10 @@ def download(url):
     title = title.replace('/', '')
     title = title.replace('"', '')
 
-    console.rule(f"[bold blue]Downloading {title}")
+    new_title = title[0:30]
+    style = "bold white"
+    console.rule(f"[bold white]Downloading: [bold blue]{new_title}")
+    console.print(f"[{cur}/{rem}]", justify="right")
     with console.status("Downloading", spinner="simpleDots"):
         # download and return title
         stream = yt.streams.get_lowest_resolution()
@@ -98,6 +102,7 @@ def list_files():
 
 def main():
 
+    i = 1
     clrscr()
     # console log logo
     print(f"[bold cyan]{logo}[/bold cyan]")
@@ -107,8 +112,9 @@ def main():
     if new_url[0] == "https://www.youtube.com/playlist":
         play_list = Playlist(video_url)
         for url in play_list.video_urls:
-            title = download(url)
-            convertor(title)
+            title = download(url, len(play_list), i)
+            convert(title, len(play_list), i)
+            i += 1
     else:
         title = download(video_url)
         convert(title)

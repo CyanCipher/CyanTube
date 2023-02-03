@@ -10,7 +10,7 @@ from rich.prompt import Prompt
 logo = """ 
   ____                _____      _
  / ___|   _  __ _ _ _|_   _|   _| |__   ___
-| |  | | | |/ _` | '_ \| || | | | '_ \ / _ \
+| |  | | | |/ _` | '_ \| || | | | '_ \ / _ \\
 | |__| |_| | (_| | | | | || |_| | |_) |  __/
  \____\__, |\__,_|_| |_|_| \__,_|_.__/ \___|
       |___/
@@ -21,15 +21,29 @@ console = Console()
 
 prompt = Prompt()
 
-os.mkdir('mp3')
-os.mkdir('mp4')
+try:
+    os.mkdir('mp3')
+    os.mkdir('mp4')
+except FileExistsError:
+    pass
+
+
+# To clear terminal screen
+def clrscr():
+    if os.name == 'nt':
+        os.system('cls')
+    else:
+        os.system('clear')
+
 
 # converter for mp4 -> mp3
-def convertor(title):
+def convert(title):
+    clrscr()
+    console.rule(f"[bold red]Converting {title}")
     wd = os.getcwd()
-    video = VideoFileClip(os.path.join(f"{wd}\mp4\{title}.mp4"))
+    video = VideoFileClip(os.path.join(wd, "mp4", f"{title}.mp4"))
     try:
-        video.audio.write_audiofile(os.path.join(f"{wd}\mp3\{title}.mp3"))
+        video.audio.write_audiofile(os.path.join(wd, "mp3", f"{title}.mp3"))
     except :
         print("This file can't be converted into mp3.")
     video.close()
@@ -38,9 +52,10 @@ def convertor(title):
 def download(url):
 
     # working directory
+    clrscr()
     wd = os.getcwd()
-    folder = "\mp4"
-    wd = wd + folder
+    folder = "mp4"
+    wd = os.path.join(wd, folder)
     yt = YouTube(f'{url}')
     
     # setting up title
@@ -50,16 +65,42 @@ def download(url):
     title = title.replace('/', '')
     title = title.replace('"', '')
 
-    # download and return title
-    stream = yt.streams.get_lowest_resolution()
-    stream.download(filename=(title + ".mp4"), output_path=wd)
+    console.rule(f"[bold blue]Downloading {title}")
+    with console.status("Downloading", spinner="simpleDots"):
+        # download and return title
+        stream = yt.streams.get_lowest_resolution()
+        stream.download(filename=(title + ".mp4"), output_path=wd)
     console.log(f"[bold green]Downloaded file {title}.")
     return title
 
+
+# To delete all trash.
+def delete_files():
+    clrscr()
+    console.rule("[bold cyan]Finishing UP")
+    with console.status("[bold cyan] Deleting Trash...", spinner="simpleDots"):
+        time.sleep(3)
+        shutil.rmtree(os.path.join(os.getcwd(), "mp4"))
+
+
+# List mechanism to present files in a nice manner.
+def list_files():
+    num = 0
+    clrscr()
+    console.rule("[bold white] Result")
+    files = os.listdir(os.path.join(os.getcwd(), "mp3"))
+    console.print("[bold blue]These are the downloaded Mp3 files.[/bold blue]")
+    for file in files:
+        num += 1
+        console.print(f"[bold white]{num} [/bold white] [bold red]- [/bold red] [bold green]{file}[/bold green]")
+
+
+
 def main():
 
+    clrscr()
     # console log logo
-    print(f"[bold magenta]{logo}[/bold magenta]")
+    print(f"[bold cyan]{logo}[/bold cyan]")
     
     video_url = prompt.ask("[bold green]Enter The URL Of PlayList")
     new_url = video_url.split('?')
@@ -68,16 +109,13 @@ def main():
         for url in play_list.video_urls:
             title = download(url)
             convertor(title)
-            time.sleep(10)
     else:
         title = download(video_url)
-        convertor(title)
-        time.sleep(10)
+        convert(title)
     
-    console.status("[bold cyan] Deleting Trash...")
-    pwd = os.getcwd()
-    target = pwd + "\mp4"
-    shutil.rmtree(target)
+    delete_files()
+    list_files()
+
 
 
 if __name__ == '__main__':

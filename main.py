@@ -8,11 +8,14 @@ from rich.console import Console
 from rich.prompt import Prompt
 
 logo = """ 
-  ___  _  _   __    _  _   ____  __  __  ____  ____ 
- / __)( \/ ) /__\  ( \( ) (_  _)(  )(  )(  _ \( ___)
-( (__  \  / /(__)\  )  (    )(   )(__)(  ) _ < )__) 
- \___) (__)(__)(__)(_)\_)  (__) (______)(____/(____)
- 
+  ____                _____      _
+ / ___|   _  __ _ _ _|_   _|   _| |__   ___
+| |  | | | |/ _` | '_ \| || | | | '_ \ / _ \
+| |__| |_| | (_| | | | | || |_| | |_) |  __/
+ \____\__, |\__,_|_| |_|_| \__,_|_.__/ \___|
+      |___/
+
+Absolutely Proprietary
  """
 console = Console()
 
@@ -21,7 +24,7 @@ prompt = Prompt()
 os.mkdir('mp3')
 os.mkdir('mp4')
 
-
+# converter for mp4 -> mp3
 def convertor(title):
     wd = os.getcwd()
     video = VideoFileClip(os.path.join(f"{wd}\mp4\{title}.mp4"))
@@ -33,22 +36,30 @@ def convertor(title):
 
 
 def download(url):
+
+    # working directory
     wd = os.getcwd()
     folder = "\mp4"
     wd = wd + folder
     yt = YouTube(f'{url}')
+    
+    # setting up title
     title = yt.title
     title = title.replace('|', '')
     title = title.replace(',', '')
     title = title.replace('/', '')
     title = title.replace('"', '')
+
+    # download and return title
     stream = yt.streams.get_lowest_resolution()
     stream.download(filename=(title + ".mp4"), output_path=wd)
     console.log(f"[bold green]Downloaded file {title}.")
     return title
 
 def main():
-    print(f"[bold cyan]{logo}[/bold cyan]")
+
+    # console log logo
+    print(f"[bold magenta]{logo}[/bold magenta]")
     
     video_url = prompt.ask("[bold green]Enter The URL Of PlayList")
     new_url = video_url.split('?')

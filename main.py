@@ -37,14 +37,14 @@ from rich.prompt import Prompt
 
 
 logo = """ 
-  ____                _____      _
- / ___|   _  __ _ _ _|_   _|   _| |__   ___
-| |  | | | |/ _` | '_ \| || | | | '_ \ / _ \\
-| |__| |_| | (_| | | | | || |_| | |_) |  __/
- \____\__, |\__,_|_| |_|_| \__,_|_.__/ \___|
-       |___/
+                                          ____                _____      _
+                                         / ___|   _  __ _ _ _|_   _|   _| |__   ___
+                                        | |  | | | |/ _` | '_ \| || | | | '_ \ / _ \\
+                                        | |__| |_| | (_| | | | | || |_| | |_) |  __/
+                                         \____\__, |\__,_|_| |_|_| \__,_|_.__/ \___|
+                                              |___/
 
-Absolutely Proprietary
+                                                    Absolutely Proprietary
  """
 console = Console()
 
@@ -89,20 +89,20 @@ def download(url, rem=1, cur=1):
     wd = os.getcwd()
     folder = "mp4"
     wd = os.path.join(wd, folder)
-    yt = YouTube(f'{url}')
-
-    title = yt.title
-    title = title.replace('|', '')
-    title = title.replace(',', '')
-    title = title.replace('/', '')
-    title = title.replace('"', '')
-
-    new_title = title[0:30]
-    style = "bold white"
-    console.rule(f"[bold white](Downloading: [bold blue]{new_title})")
-    console.print(f"[{cur}/{rem}]", justify="right")
-
     try:
+        yt = YouTube(f'{url}')
+
+        title = yt.title
+        title = title.replace('|', '')
+        title = title.replace(',', '')
+        title = title.replace('/', '')
+        title = title.replace('"', '')
+
+        new_title = title[0:30]
+        style = "bold white"
+        console.rule(f"[bold white](Downloading: [bold blue]{new_title})")
+        console.print(f"[{cur}/{rem}]", justify="right")
+
         with console.status("Downloading", spinner="simpleDots"):
             # download and return title
             stream = yt.streams.get_lowest_resolution()
@@ -111,7 +111,6 @@ def download(url, rem=1, cur=1):
         return title
 
     except Exception as e:
-        console.log(f"[bold red]Download failed for {title[0:30]}, please try again.")
         return False
 
 
@@ -153,6 +152,9 @@ def main():
         file_name = download(video_url)
         if file_name:
             convert(file_name)
+        else:
+            console.log("[bold red]Download failed, please try again.", justify="center")
+            return 0
 
     delete_files()
     list_files()

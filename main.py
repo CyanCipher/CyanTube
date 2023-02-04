@@ -150,6 +150,12 @@ def main():
                 console.print("[bold white] Multiple failed attempts using current folder as the target.", justify="center")
                 output_path = os.getcwd()
                 time.sleep(2)
+                try:
+                    os.mkdir(os.path.join(output_path, 'MP3'))
+                    os.mkdir(os.path.join(output_path, 'MP4'))
+                    break
+                except FileExistsError:
+                    pass
             
 
     if "playlist" in video_url:

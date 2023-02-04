@@ -46,15 +46,10 @@ logo = """
 
                                                     Absolutely Proprietary
  """
+
+
 console = Console()
-
 prompt = Prompt()
-
-try:
-    os.mkdir('mp3')
-    os.mkdir('mp4')
-except FileExistsError:
-    pass
 
 
 # To clear terminal screen
@@ -74,9 +69,9 @@ def convert(title, output_path, rem=1, cur=1):
     clrscr()
     console.rule(f"[bold white](Converting: [bold red]{title[0:30]})")
     console.print(f"[{cur}/{rem}]", justify="right")
-    video = VideoFileClip(os.path.join(output_path, "mp4", f"{title}.mp4"))
+    video = VideoFileClip(os.path.join(output_path, "MP4", f"{title}.mp4"))
     try:
-        video.audio.write_audiofile(os.path.join(output_path, "mp3", f"{title}.mp3"))
+        video.audio.write_audiofile(os.path.join(output_path, "MP3", f"{title}.mp3"))
     except:
         print("This file can't be converted into mp3.")
     video.close()
@@ -85,7 +80,7 @@ def convert(title, output_path, rem=1, cur=1):
 def download(url, output_path, rem=1, cur=1):
 
     clrscr()
-    wd = os.path.join(output_path, "mp4")
+    wd = os.path.join(output_path, "MP4")
     try:
         yt = YouTube(f'{url}')
 
@@ -117,7 +112,7 @@ def delete_files(output_path):
     console.rule("[bold cyan]Finishing UP")
     with console.status("[bold cyan] Deleting Trash...", spinner="simpleDots"):
         time.sleep(3)
-        shutil.rmtree(os.path.join(output_path, "mp4"))
+        shutil.rmtree(os.path.join(output_path, "MP4"))
 
 
 # List mechanism to present files in a nice manner.
@@ -125,8 +120,8 @@ def list_files(output_path):
     num = 0
     clrscr()
     console.rule("[bold white] Result")
-    files = os.listdir(os.path.join(output_path, "mp3"))
-    console.print("[bold blue]These are the downloaded Mp3 files.[/bold blue]")
+    files = os.listdir(os.path.join(output_path, "MP3"))
+    console.print("[bold blue]These are the downloaded MP3 files.[/bold blue]")
     for file in files:
         num += 1
         console.print(
@@ -142,8 +137,9 @@ def main():
         clrscr()
         output_path = prompt.ask("[bold green]Output Path? (Default=", default=os.getcwd())
         try:
-            os.mkdir(os.path.join(output_path, 'mp3'))
-            os.mkdir(os.path.join(output_path, 'mp4'))
+            os.mkdir(os.path.join(output_path, 'MP3'))
+            os.mkdir(os.path.join(output_path, 'MP4'))
+            break
         except FileExistsError:
             pass
         except FileNotFoundError:

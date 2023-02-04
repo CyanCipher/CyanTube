@@ -42,7 +42,7 @@ logo = """
 | |  | | | |/ _` | '_ \| || | | | '_ \ / _ \\
 | |__| |_| | (_| | | | | || |_| | |_) |  __/
  \____\__, |\__,_|_| |_|_| \__,_|_.__/ \___|
-      |___/
+       |___/
 
 Absolutely Proprietary
  """
@@ -63,6 +63,10 @@ def clrscr():
         os.system('cls')
     else:
         os.system('clear')
+
+    console.rule("[bold cyan]Welcome")
+    console.print(f"[bold cyan]{logo}[/bold cyan]")
+    console.rule()
 
 
 # converter for mp4 -> mp3
@@ -136,8 +140,6 @@ def list_files():
 def main():
     i = 1
     clrscr()
-    # console log logo
-    print(f"[bold cyan]{logo}[/bold cyan]")
 
     video_url = prompt.ask("[bold green]Enter The URL Of PlayList")
     if "playlist" in video_url:

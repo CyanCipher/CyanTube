@@ -70,25 +70,22 @@ def clrscr():
 
 
 # converter for mp4 -> mp3
-def convert(title, rem=1, cur=1):
+def convert(title, output_path, rem=1, cur=1):
     clrscr()
     console.rule(f"[bold white](Converting: [bold red]{title[0:30]})")
     console.print(f"[{cur}/{rem}]", justify="right")
-    wd = os.getcwd()
-    video = VideoFileClip(os.path.join(wd, "mp4", f"{title}.mp4"))
+    video = VideoFileClip(os.path.join(output_path, "mp4", f"{title}.mp4"))
     try:
-        video.audio.write_audiofile(os.path.join(wd, "mp3", f"{title}.mp3"))
+        video.audio.write_audiofile(os.path.join(output_path, "mp3", f"{title}.mp3"))
     except:
         print("This file can't be converted into mp3.")
     video.close()
 
 
-def download(url, rem=1, cur=1):
+def download(url, output_path, rem=1, cur=1):
 
     clrscr()
-    wd = os.getcwd()
-    folder = "mp4"
-    wd = os.path.join(wd, folder)
+    wd = os.path.join(output_path, "mp4")
     try:
         yt = YouTube(f'{url}')
 
@@ -115,20 +112,20 @@ def download(url, rem=1, cur=1):
 
 
 # To delete all trash.
-def delete_files():
+def delete_files(output_path):
     clrscr()
     console.rule("[bold cyan]Finishing UP")
     with console.status("[bold cyan] Deleting Trash...", spinner="simpleDots"):
         time.sleep(3)
-        shutil.rmtree(os.path.join(os.getcwd(), "mp4"))
+        shutil.rmtree(os.path.join(output_path, "mp4"))
 
 
 # List mechanism to present files in a nice manner.
-def list_files():
+def list_files(output_path):
     num = 0
     clrscr()
     console.rule("[bold white] Result")
-    files = os.listdir(os.path.join(os.getcwd(), "mp3"))
+    files = os.listdir(os.path.join(output_path, "mp3"))
     console.print("[bold blue]These are the downloaded Mp3 files.[/bold blue]")
     for file in files:
         num += 1
@@ -140,24 +137,42 @@ def main():
     i = 1
     clrscr()
 
-    video_url = prompt.ask("[bold green]Enter The URL Of PlayList")
+    video_url = prompt.ask("[bold green]Enter The URL Of PlayList: ")
+    for t in range(3):
+        clrscr()
+        output_path = prompt.ask("[bold green]Output Path? (Default=", default=os.getcwd())
+        try:
+            os.mkdir(os.path.join(output_path, 'mp3'))
+            os.mkdir(os.path.join(output_path, 'mp4'))
+        except FileExistsError:
+            pass
+        except FileNotFoundError:
+            console.print("[bold red]Folder not found... Retry")
+            time.sleep(2)
+            if t == 2:
+                clrscr()
+                console.print("[bold white] Multiple failed attempts using current folder as the target.", justify="center")
+                output_path = os.getcwd()
+                time.sleep(2)
+            
+
     if "playlist" in video_url:
         play_list = Playlist(video_url)
         for url in play_list.video_urls:
-            file_name = download(url, len(play_list), i)
+            file_name = download(url, output_path, len(play_list), i)
             if file_name:
-                convert(file_name, len(play_list), i)
+                convert(file_name, output_path, len(play_list), i)
             i += 1
     else:
-        file_name = download(video_url)
+        file_name = download(video_url, output_path)
         if file_name:
-            convert(file_name)
+            convert(file_name, output_path)
         else:
             console.log("[bold red]Download failed, please try again.", justify="center")
             return 0
 
-    delete_files()
-    list_files()
+    delete_files(output_path)
+    list_files(output_path)
 
 
 if __name__ == '__main__':
